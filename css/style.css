@@ -1,0 +1,87 @@
+/* General Styles */
+body {
+	font-family: "Quicksand", sans-serif;
+	font-size: 24px;
+	font-weight: 400;
+	color: #ffffff;
+	text-align: center;
+	background-color: #00d0f4;
+}
+.colorBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	border-top: 8px solid #00aecc;
+}
+.container {
+	position: relative;
+	margin: 8px auto;
+	padding: 20px;
+	max-width: 600px;
+}
+
+/* Heroes */
+.dice-group-hero {
+	margin: 50px 0 70px 0;
+}
+.header-hero {
+	margin-top: 30px;
+	font-size: 48px;
+	text-shadow: 2px 2px 1px #00c4e6;
+}
+.button-group-hero {
+	margin-top: 30px;
+}
+
+/* Dice */
+.die {
+	display: inline-block;
+	height: 50px;
+	width: 50px;
+	border-radius: 6px;
+	margin-right: 15px;
+	background-color: #ffffff;
+	box-shadow: 2px 2px 1px #00c4e6;
+}
+.die:last-child {
+	margin-right: 0px;
+}
+
+/* Buttons */
+.button {
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 12px 15px 12px 15px;
+	letter-spacing: 1px;
+	font-size: 14px;
+	text-transform: uppercase;
+	background-color: #00d0f4;
+	border: 2px solid #ffffff;
+	border-radius: 4px;
+	color: #ffffff;
+	cursor: pointer;
+	margin-bottom: 10px;
+	min-width: 230px;
+}
+.button:hover {
+	background-color: #4de5ff;
+}
+.button:focus {
+	outline: 0;
+}
+
+/* Misc. Styles */
+.divider {
+	width: 100%;
+	height: 1px;
+	border-top: 1px solid #4de5ff;
+	margin: 20px 0 20px 0;
+}
+
+/* Links */
+a:link, a:visited, a:hover, a:active {
+	color: #ffffff;
+	text-decoration: underline;
+}
