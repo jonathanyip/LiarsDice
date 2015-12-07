@@ -78,6 +78,14 @@ body {
 .input-group input[type="text"]:focus {
 	outline: 0;
 }
+.input-group .error {
+	font-size: 12px;
+	font-style: italic;
+	margin: 10px 0 20px 0;
+}
+.input-group .error p {
+	margin: 2px 0 2px 0;
+}
 
 /* Users */
 .users-group > .header {
