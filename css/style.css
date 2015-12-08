@@ -78,6 +78,12 @@ body {
 .input-group input[type="text"]:focus {
 	outline: 0;
 }
+.input-group input[type="text"]::-webkit-input-placeholder {
+	color: #aaaaaa;
+}
+.input-group input[type="text"]::-moz-placeholder {
+	color: #aaaaaa;
+}
 .input-group .error {
 	font-size: 12px;
 	font-style: italic;
@@ -109,6 +115,68 @@ body {
 	background-color: #ffffff;
 	color: #333333;
 	box-shadow: 2px 2px 1px #00c4e6;
+}
+
+/* Select (Special Group) */
+.select-group {
+	position: relative;
+	margin: 30px auto;
+	width: 230px;
+	border-radius: 4px;
+	border: 2px solid #ffffff;
+}
+.select-group:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+.select-group .left {
+	float: left;
+	width: 113px;
+}
+.select-group .right {
+	float: right;
+	width: 113px;
+}
+.select-group .column-divider {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	border-left: 2px solid #4de5ff;
+}
+.select-group .input {
+	font-size: 64px;
+	background-color: #00d0f4;
+	margin: 45px 0 0 5px;
+	width: 85px;
+	text-align: center;
+	border: none;
+	color: #ffffff;
+}
+.select-group .input:focus {
+	outline: 0;
+}
+.select-group .input::-webkit-input-placeholder {
+	color: #ffffff;
+}
+.select-group .input::-moz-placeholder {
+	color: #ffffff;
+}
+.select-group .select {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+.select-group .select li {
+	display: block;
+	cursor: pointer;
+	padding: 2px 0 2px 0;
+	background-color: #00d0f4;
+	transition: background-color 0.1s linear;
+}
+.select-group .select li:hover {
+	background-color: #4de5ff;
 }
 
 /* Buttons */
