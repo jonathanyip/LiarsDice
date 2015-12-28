@@ -1,4 +1,3 @@
-# Liar's Dice
-*A NodeJS web application for the game Liar's Dice.*
-
-There's nothing here right now.
+## Liar's Dice
+A NodeJS web application for the game Liar's Dice.
+Check it out [here](http://liardice.herokuapp.com/) (*coming soon, though*)!

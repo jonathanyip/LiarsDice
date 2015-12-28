@@ -1,4 +1,4 @@
-/* Global variables */
+/* Global variables and requires */
 var express = require('express');
 var swig = require('swig');
 var app = express();
@@ -12,11 +12,12 @@ app.set('view cache', false);
 /* Local static files */
 app.use(express.static('static'));
 
-app.get('/', function(req, res) {
-	res.render('index');
-});
+/* Configure all views */
+var views = require(__dirname + '/views.js')(app);
 
-var server = app.listen(3000, function() {
+/* Start server with the process defined port (or 3000) */
+var port = process.env.PORT || 3000;
+var server = app.listen(port, function() {
 	var host = server.address().address;
 	var port = server.address().port;
 	
