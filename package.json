@@ -1,0 +1,16 @@
+{
+	"name": "liarsdice",
+	"version": "1.0.0",
+	"description": "A NodeJS web application for the game Liar's Dice.",
+	"main": "LiarsDice.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/jonathanyip/LiarsDice.git"
+	},
+	"author": "Jonathan Yip",
+	"license": "MIT",
+	"dependencies": {
+		"express": "^4.13.3",
+		"swig": "^1.4.2"
+	}
+}

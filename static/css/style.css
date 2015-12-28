@@ -1,0 +1,217 @@
+/* General Styles */
+body {
+	font-family: "Quicksand", sans-serif;
+	font-size: 20px;
+	font-weight: 400;
+	color: #ffffff;
+	text-align: center;
+	background-color: #00d0f4;
+}
+.colorBar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	border-top: 8px solid #00aecc;
+}
+.container {
+	position: relative;
+	margin: 8px auto;
+	padding: 5px 20px 10px 20px;
+	max-width: 720px;
+}
+.container > .header {
+	font-size: 24px;
+	margin: 30px 0 30px 0;
+}
+
+/* Heroes */
+.dice-group-hero {
+	margin: 65px 0 70px 0;
+}
+.header-hero {
+	margin-top: 30px;
+	font-size: 48px;
+	text-shadow: 2px 2px 1px #00c4e6;
+}
+.button-group-hero {
+	margin-top: 30px;
+}
+
+/* Groups: Dice, Input, Users, Button */
+.group, .dice-group, .input-group, .users-group, .button-group {
+	margin: 30px 0 30px 0;
+}
+
+/* Dice */
+.die {
+	display: inline-block;
+	height: 50px;
+	width: 50px;
+	border-radius: 6px;
+	margin-right: 15px;
+	background-color: #ffffff;
+	box-shadow: 2px 2px 1px #00c4e6;
+}
+.die:last-child {
+	margin-right: 0px;
+}
+
+/* Input */
+.input-group > .header {
+	font-size: 24px;
+	margin-bottom: 20px;
+}
+.input-group input[type="text"] {
+	display: inline-block;
+	box-sizing: border-box;
+	min-width: 230px;
+	font-size: 14px;
+	background-color: #ffffff;
+	box-shadow: 2px 2px 1px #00c4e6;
+	padding: 12px 15px 12px 15px;
+	border: none;
+	border-radius: 6px;
+	color: #333333;
+}
+.input-group input[type="text"]:focus {
+	outline: 0;
+}
+.input-group input[type="text"]::-webkit-input-placeholder {
+	color: #aaaaaa;
+}
+.input-group input[type="text"]::-moz-placeholder {
+	color: #aaaaaa;
+}
+.input-group .error {
+	font-size: 12px;
+	font-style: italic;
+	margin: 10px 0 20px 0;
+}
+.input-group .error p {
+	margin: 2px 0 2px 0;
+}
+
+/* Users */
+.users-group > .header {
+	font-size: 16px;
+	margin-bottom: 10px;
+}
+.users-group .prompt {
+	font-size: 16px;
+	margin-top: 10px;
+}
+.users-group ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+.users-group ul li, .user {
+	display: inline-block;
+	font-size: 16px;
+	border-radius: 4px;
+	padding: 2px 5px 2px 5px;
+	background-color: #ffffff;
+	color: #333333;
+	box-shadow: 2px 2px 1px #00c4e6;
+}
+
+/* Select (Special Group) */
+.select-group {
+	position: relative;
+	margin: 30px auto;
+	width: 230px;
+	border-radius: 4px;
+	border: 2px solid #ffffff;
+}
+.select-group:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+.select-group .left {
+	float: left;
+	width: 113px;
+}
+.select-group .right {
+	float: right;
+	width: 113px;
+}
+.select-group .column-divider {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	border-left: 2px solid #4de5ff;
+}
+.select-group .input {
+	font-size: 64px;
+	background-color: #00d0f4;
+	margin: 60px 0 0 5px;
+	width: 85px;
+	text-align: center;
+	border: none;
+	color: #ffffff;
+}
+.select-group .input:focus {
+	outline: 0;
+}
+.select-group .input::-webkit-input-placeholder {
+	color: #ffffff;
+}
+.select-group .input::-moz-placeholder {
+	color: #ffffff;
+}
+.select-group .select {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+.select-group .select li {
+	display: block;
+	cursor: pointer;
+	padding: 5px 0 5px 0;
+	background-color: #00d0f4;
+	transition: background-color 0.1s linear;
+}
+.select-group .select li:hover {
+	background-color: #4de5ff;
+}
+
+/* Buttons */
+.button {
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 12px 15px 12px 15px;
+	letter-spacing: 1px;
+	font-size: 14px;
+	text-transform: uppercase;
+	background-color: #00d0f4;
+	border: 2px solid #ffffff;
+	border-radius: 4px;
+	color: #ffffff;
+	cursor: pointer;
+	margin-bottom: 10px;
+	min-width: 230px;
+	transition: background-color 0.1s linear;
+}
+.button:hover {
+	background-color: #4de5ff;
+}
+.button:focus {
+	outline: 0;
+}
+
+/* Misc. Styles */
+.divider {
+	width: 100%;
+	height: 1px;
+	border-top: 1px solid #4de5ff;
+}
+
+/* Links */
+a:link, a:visited, a:hover, a:active {
+	color: #ffffff;
+	text-decoration: underline;
+}
