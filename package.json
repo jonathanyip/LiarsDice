@@ -3,6 +3,9 @@
 	"version": "1.0.0",
 	"description": "A NodeJS web application for the game Liar's Dice.",
 	"main": "LiarsDice.js",
+	"scripts": {
+		"start": "node liarsdice.js"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/jonathanyip/LiarsDice.git"
