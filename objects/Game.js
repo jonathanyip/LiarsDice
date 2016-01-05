@@ -1,6 +1,5 @@
-var Game = function(gameId) {
-	/* Room Variables */
-	this.id = id;
+var Game = function(gameID) {
+	this.ID = gameID;
 	this.players = [];
 }
 

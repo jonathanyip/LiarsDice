@@ -1,30 +1,41 @@
 module.exports = function(server) {
 	var io = require('socket.io')(server);
-	var RoomManager = require('./managers/RoomManager.js');
+	var gameManager = require('./gameManager.js');
 
 	io.on('connection', function(socket) {
 		console.log("A new user has connected!");
 
-		var game = null;
-		var player = null;
+		/*
+		 * Recieve Messages From Client
+		 * All server responses begin with "SConfirm_" + Message Tag
+		 *
+		 * Can respond with:
+		 * "Response" = Message of what happened (usually success).
+		 * "Error" = Any errors that might have occured.
+		 * "..." = Any other responses are custom variables for that situation.
+		 */
+		socket.on('CreateGame', function(msg) {
+			socket.emit('SConfirm_CreateGame', { 'GameID': RoomManager.createGame() });
+		});
 
-		/* Create a new game */
-		socket.on('createGame', function(msg) {
-			socket.emit('createGame_res', { 'gameId': RoomManager.createGame() });
+		socket.on('DoesGameExist', function(msg) {
+			socket.emit('SConfirm_DoesGameExist', { 'Response': gameManager.doesGameExist(msg["GameID"]) });
+		})
+
+		socket.on('JoinGame', function(msg) {
+			var player = gameManager.joinGame(msg["PlayerName"], msg["GameID"], socket.id);
+			if(socket.player !== null) {
+				socket.player = player;
+				socket.emit('SConfirm_JoinGame', { 'Response': "JoinedGame" });
+			} else {
+				socket.emit('SConfirm_JoinGame', { 'Error': "GameDoesNotExist" });
+			}
 		});
-		/* Join/Leave a game */
-		socket.on('joinGame', function(msg) {
-			RoomManager.joinGame(msg.playerName, msg.gameId, socket.id, function(err, new_game, new_player) {
-				if(err === false) {
-					game = new_game;
-					player = new_player;
-				} else {
-					socket.emit('joinGame_res', { 'error': 'GameDoesNotExist' })
-				}
-			});
-		});
+
 		socket.on('disconnect', function(msg) {
-			RoomManager.leaveGame(game, player);
+			if("player" in socket) {
+				gameManager.leaveGame(socket.player);
+			}
 		});
 	});
 };

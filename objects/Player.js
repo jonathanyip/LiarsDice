@@ -1,9 +1,7 @@
-var Player = function(socketId, game, name) {
-	/* Room Variables */
-	this.id = socketId;
-	this.game = game;
-
+var Player = function(playerName, game, socketID) {
 	this.name = name;
+	this.game = game;
+	this.ID = socketID;
 }
 
 module.exports = Player;
