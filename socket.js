@@ -6,36 +6,44 @@ module.exports = function(server) {
 		console.log("A new user has connected!");
 
 		/*
-		 * Recieve Messages From Client
-		 * All server responses begin with "SConfirm_" + Message Tag
-		 *
-		 * Can respond with:
-		 * "Response" = Message of what happened (usually success).
-		 * "Error" = Any errors that might have occured.
-		 * "..." = Any other responses are custom variables for that situation.
+		 * Handle Incoming Messages:
+		 * Use msg.info for the identifying heading
+		 * Use msg.error for any errors
 		 */
-		socket.on('CreateGame', function(msg) {
-			socket.emit('SConfirm_CreateGame', { 'GameID': RoomManager.createGame() });
-		});
 
-		socket.on('DoesGameExist', function(msg) {
-			socket.emit('SConfirm_DoesGameExist', { 'Response': gameManager.doesGameExist(msg["GameID"]) });
-		})
-
-		socket.on('JoinGame', function(msg) {
-			var player = gameManager.joinGame(msg["PlayerName"], msg["GameID"], socket.id);
-			if(socket.player !== null) {
-				socket.player = player;
-				socket.emit('SConfirm_JoinGame', { 'Response': "JoinedGame" });
-			} else {
-				socket.emit('SConfirm_JoinGame', { 'Error': "GameDoesNotExist" });
+		/* From General (All purpose messages, but usually for pre-game things) */
+		socket.on('General', function(msg) {
+			switch(msg.info) {
+				case 'CreateGame': {
+					gameManager.createGame(socket);
+					break;
+				}
+				case 'DoesGameExist': {
+					gameManager.doesGameExist(socket, msg['GameID']);
+					break;
+				}
+				case 'JoinGame': {
+					gameManager.getGame(socket, msg['GameID'], function(game) {
+						game.joinGame.call(game, io, socket, msg['PlayerName']);
+					});
+					break;
+				}
 			}
 		});
 
+		/* From Game (Messages pertaining to the game itself) */
+		socket.on('Game', function(msg) {
+			switch(msg.info) {
+				/* TODO */
+			}
+		});
+
+		/* If the user disconnects */
 		socket.on('disconnect', function(msg) {
-			if("player" in socket) {
-				gameManager.leaveGame(socket.player);
-			}
+			gameManager.getSocketGP(socket, function(game, player) {
+				game.leaveGame.call(game, player);
+				gameManager.checkEmptyGames(game.id);
+			});
 		});
 	});
 };

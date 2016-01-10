@@ -1,7 +1,7 @@
-var Player = function(playerName, game, socketID) {
+/* Player Constructor */
+var Player = function(playerName, socketID) {
 	this.name = name;
-	this.game = game;
-	this.ID = socketID;
+	this.id = socketID;
 }
 
 module.exports = Player;
