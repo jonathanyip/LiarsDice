@@ -34,7 +34,30 @@ module.exports = function(server) {
 		/* From Game (Messages pertaining to the game itself) */
 		socket.on('Game', function(msg) {
 			switch(msg.info) {
-				/* TODO */
+				case 'StartGame': {
+					gameManager.getSocketGP(socket, function(game, player) {
+						game.startGame.call(game, io);
+					});
+					break;
+				}
+				case 'DoTurn': {
+					gameManager.getSocketGP(socket, function(game, player) {
+						game.doTurn.call(game, io);
+					});
+					break;
+				}
+				case 'DoRound': {
+					gameManager.getSocketGP(socket, function(game, player) {
+						game.doRound.call(game, io);
+					});
+					break;
+				}
+				case 'GoToLobby': {
+					gameManager.getSocketGP(socket, function(game, player) {
+						game.goToLobby.call(game, io);
+					});
+					break;
+				}
 			}
 		});
 
