@@ -18,4 +18,10 @@ Player.prototype.randomizeDice = function() {
 	}
 }
 
+/* Resets player to a near perfect state */
+Player.prototype.reset = function() {
+	this.dice = [new Die(), new Die(), new Die()];
+	this.stillAlive = true;
+}
+
 module.exports = Player;

@@ -40,16 +40,19 @@ module.exports = function(server) {
 					});
 					break;
 				}
-				case 'DoTurn': {
-					gameManager.getSocketGP(socket, function(game, player) {
-						game.doTurn.call(game, io);
-					});
-					break;
-				}
 				case 'DoRound': {
 					gameManager.getSocketGP(socket, function(game, player) {
 						game.doRound.call(game, io);
 					});
+					break;
+				}
+				case 'doAction': {
+					gameManager.getSocketGP(socket, function(game, player) {
+						/*
+						 * TODO: Parse info here, or pass message into doAction()?
+						 */
+						game.doAction.call(game, io);
+					})
 					break;
 				}
 				case 'GoToLobby': {

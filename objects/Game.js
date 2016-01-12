@@ -13,8 +13,11 @@ var Game = function(gameID) {
 	this.turn = -1;
 
 	// The current on the table. If it is null, we need an initial bet, cause
-	// we just started the game
+	// we just started the game or we did another round.
 	this.currentBet = null;
+
+	// Total number of dice in play
+	this.diceTotal = 0;
 }
 
 /**********************
@@ -78,27 +81,47 @@ Game.prototype.getPlayerNames = function() {
 /******************
  * Game Functions *
  ******************/
-/* Starts the game by preparing some initial values, then calling doTurn() */
+/* Starts the game by preparing some initial values */
 Game.prototype.startGame = function(io) {
 	this.started = true;
 	this.turn = -1;
 	this.currentBet = null;
 
+	// Reset all players, just in case we're playing again
+	for(var i = 0; i < this.players.length; i++) {
+		this.players[i].reset.call(this.players[i]);
+	}
+
+	// Start off with a round
 	this.doRound(io);
 }
 
-/* Do a round (new dice and switch players)! */
+/* Do a round (new dice, reset bet, then do a turn)! */
 Game.prototype.doRound = function(io) {
+	// Tell them to display a loading screen
 	this.loading(io);
-	this.doTurn();
+
+	// Reset current bet to null
+	this.currentBet = null;
 
 	// Randomize all dice
+	this.randomizeDice();
+
+	// Update total number of dice
+	this.updateDiceTotal();
+
+	// Sends every player a game update
 	for(var i = 0; i < this.players.length; i++) {
-		this.players[i].randomizeDice.call(this.players[i]);
+		var gameStats = { 'DieList': this.players[i].dice, 'DiceTotal': this.diceTotal };
+		this.sendToPlayer(io, this.players[i], {
+			info: 'GameUpdate',
+			'Type': 'Round',
+			'GameStats': gameStats
+		});
 	}
 
-	// Update player stats
-	this.updatePlayerStats(io);
+	// Do a turn
+	this.doTurn();
 }
 
 /* Do a turn (no new dice, just switch players)! */
@@ -106,27 +129,20 @@ Game.prototype.doTurn = function(io) {
 	// Get to the next player
 	this.turn = this.getNextPlayer();
 
-	// Send info to players
-	var gameStats = this.getGameStats();
-	this.sendToAllExcept(io, this.players[this.turn], { info: 'WaitTurn', 'GameStats': gameStats });
-	this.sendToPlayer(io, this.players[this.turn], { info: 'YourTurn', 'GameStats': gameStats });
-}
-
-/* Get game statistics */
-Game.prototype.getGameStats = function() {
-	var diceTotal = 0;
-	for(var i = 0; i < this.players.length; i++) {
-		diceTotal += this.players[i].dice.length;
-	}
-
-	return { 'DiceTotal': diceTotal, 'CurrentPlayer': this.players[this.turn].name, 'CurrentBet': this.currentBet };
-}
-
-/* Send the current information to the players */
-Game.prototype.updatePlayerStats = function(io) {
-	for(var i = 0; i < this.players.length; i++) {
-		this.sendToPlayer(io, this.players[i], { info: 'UpdatePlayerStats', 'DieList': this.players[i].dice });
-	}
+	// Send a game update to players
+	var gameStats = { 'CurrentPlayer': this.players[this.turn].name, 'CurrentBet': this.currentBet };
+	this.sendToAllExcept(io, this.players[this.turn], {
+		info: 'GameUpdate',
+		'Type': 'Turn',
+		'YourTurn': false,
+		'GameStats': gameStats
+	});
+	this.sendToPlayer(io, this.players[this.turn], {
+		info: 'TurnUpdate',
+		'Type': 'Turn',
+		'YourTurn': true,
+		'GameStats': gameStats
+	});
 }
 
 /* Does an action performed by a specific player */
@@ -155,15 +171,35 @@ Game.prototype.doAction = function(io) {
 	 */
 }
 
-/* Tells the players to display a loading notification. */
-Game.prototype.loading = function(io) {
-	this.sendToAll(io, { info: 'Loading' });
-}
-
 /* Returns to the lobby, so new players can join */
 Game.prototype.goToLobby = function(io) {
 	this.started = false;
 	this.sendToAll(io, { info: 'GoToLobby' });
+}
+
+/*********************
+ * Helpful Functions *
+ *********************/
+/* Randomize all dice */
+Game.prototype.randomizeDice = function() {
+	for(var i = 0; i < this.players.length; i++) {
+		this.players[i].randomizeDice.call(this.players[i]);
+	}
+}
+
+/* Updates total number of dice in play */
+Game.prototype.updateDiceTotal = function() {
+	var diceTotal = 0;
+	for(var i = 0; i < this.players.length; i++) {
+		diceTotal += this.players[i].dice.length;
+	}
+
+	this.diceTotal = diceTotal;
+}
+
+/* Tells the players to display a loading notification. */
+Game.prototype.loading = function(io) {
+	this.sendToAll(io, { info: 'Loading' });
 }
 
 /************************
