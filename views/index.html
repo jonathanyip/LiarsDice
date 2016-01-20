@@ -16,16 +16,34 @@
 	</head>
 	<body>
 		<div class="colorBar"></div>
-		<div class="container">
+		<div class="container" id="index-page">
 			<div class="dice-group-hero">
 				<div class="die"></div><div class="die"></div><div class="die"></div>
 			</div>
 			<div class="divider"></div>
 			<div class="header-hero">Liar's Dice</div>
 			<div class="button-group-hero">
-				<button class="button">Play the game!</button>
-				<button class="button">Join an existing game</button>
+				<button class="button" id="index-play-game">Play the game!</button>
+				<button class="button" id="index-join-game">Join an existing game</button>
 			</div>
 		</div>
+		<div class="container" id="join-page">
+			<div class="input-group">
+				<div class="header">What's the game key?</div>
+				<input class="input" type="text" placeholder="Game Key" id="join-game-key">
+				<div class="error" id="join-error">
+					<p>Can't seem to find this game key!</p>
+					<p>Did you want to <a href="#">make a new game instead?</a></p>
+				</div>
+			</div>
+			<div class="button-group">
+				<button class="button" id="join-find-game">Join!</button>
+			</div>
+		</div>
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/velocity.min.js"></script>
+		<script src="/js/velocity.ui.min.js"></script>
+		<script src="/js/socket.io.js"></script>
+		<script src="/js/index.js"></script>
 	</body>
 <html>

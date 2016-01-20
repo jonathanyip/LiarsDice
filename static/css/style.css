@@ -215,3 +215,9 @@ a:link, a:visited, a:hover, a:active {
 	color: #ffffff;
 	text-decoration: underline;
 }
+
+/* Hide these pages initially */
+#join-page, .error {
+	display: none;
+	opacity: 0;
+}
