@@ -1,21 +1,6 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends 'layout.html' %}
 
-		<title>Dice</title>
-
-		<meta name="description" content="">
-		<meta name="author" content="">
-
-		<link href="https://fonts.googleapis.com/css?family=Quicksand:400,700" rel="stylesheet">
-		<link href="/css/normalize.css" rel="stylesheet">
-		<link href="/css/style.css" rel="stylesheet">
-	</head>
-	<body>
-		<div class="colorBar"></div>
+{% block content %}
 		<div class="container" id="index-page">
 			<div class="dice-group-hero">
 				<div class="die"></div><div class="die"></div><div class="die"></div>
@@ -33,17 +18,15 @@
 				<input class="input" type="text" placeholder="Game Key" id="join-game-key">
 				<div class="error" id="join-error">
 					<p>Can't seem to find this game key!</p>
-					<p>Did you want to <a href="#">make a new game instead?</a></p>
+					<p>Did you want to <a href="#" id="join-play-game">make a new game instead?</a></p>
 				</div>
 			</div>
 			<div class="button-group">
 				<button class="button" id="join-find-game">Join!</button>
 			</div>
 		</div>
-		<script src="/js/jquery.min.js"></script>
-		<script src="/js/velocity.min.js"></script>
-		<script src="/js/velocity.ui.min.js"></script>
-		<script src="/js/socket.io.js"></script>
+{% endblock %}
+
+{% block javascript %}
 		<script src="/js/index.js"></script>
-	</body>
-<html>
+{% endblock %}

@@ -21,7 +21,7 @@ var server = app.listen(port, function() {
 	var host = server.address().address;
 	var port = server.address().port;
 
-	console.log("Server is currently working!");
+	console.log("[Socket] Server is currently working!");
 });
 
 /* Initialize socket */

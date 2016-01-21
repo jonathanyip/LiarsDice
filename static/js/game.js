@@ -1,10 +1,10 @@
 $(document).ready(function() {
-    var socket = io();
+	var socket = io();
 
-    /* Handle messages from the server */
-    socket.on('GameManager', function(msg) {
-        switch(msg.info) {
-            /* TODO */
-        }
-    });
+	/* Handle messages from the server */
+	socket.on('GameManager', function(msg) {
+		switch(msg.info) {
+			/* TODO */
+		}
+	});
 });

@@ -3,7 +3,7 @@ module.exports = function(server) {
 	var gameManager = require('./gameManager.js');
 
 	io.on('connection', function(socket) {
-		console.log("A new user has connected!");
+		console.log("[Socket] A new user has connected!");
 
 		/*
 		 * Handle Incoming Messages:

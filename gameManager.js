@@ -13,15 +13,18 @@ module.exports.createGame = function(socket) {
 	var game = new Game(gameID);
 	games[gameID] = game;
 
-	socket.emit('GameManager', { info: 'CreatedGame', 'GameID': gameManager.createGame() });
+	socket.emit('GameManager', { info: 'CreatedGame', 'GameID': gameID });
+	console.log("[GameManager] Created new game (" + gameID + ")");
 }
 
 /* Checks whether this game exists, and sends info back to client */
 module.exports.doesGameExist = function(socket, gameID) {
 	if(gameID in games) {
-		socket.emit('GameManager', { info: 'GameExists' });
+		socket.emit('GameManager', { info: 'GameExists', 'GameID': gameID });
+		console.log("[GameManager] Game (" + gameID + ") exists!");
 	} else {
 		socket.emit('GameManager', { info: 'GameDoesNotExist' });
+		console.log("[GameManager] Game (" + gameID + ") does not exist!");
 	}
 }
 
@@ -31,6 +34,7 @@ module.exports.getGame = function(socket, gameID, callback) {
 		callback(games[gameID]);
 	} else {
 		socket.emit('GameManager', { 'Error': 'GameDoesNotExist' });
+		console.log("[GameManager] Game (" + gameID + ") does not exist!");
 	}
 }
 
@@ -40,6 +44,7 @@ module.exports.getSocketGP = function(socket, callback) {
 		callback(socket.game, socket.player);
 	} else {
 		socket.emit('GameManager', { error: 'BadSocketEnvironment' });
+		console.log("[GameManager] Player has a bad socket environment!");
 	}
 }
 
@@ -62,7 +67,7 @@ module.exports.randomID = function(length) {
 	var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 	for(var i = 0; i < length; i++) {
-		randomID += chars[Math.floor(Math.random() * validChars.length)];
+		randomID += validChars[Math.floor(Math.random() * validChars.length)];
 	}
 
 	return randomID;
