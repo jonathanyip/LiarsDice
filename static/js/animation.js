@@ -39,24 +39,32 @@
         });
         return this;
     }
-    $.fn.animIndexIntro = function() {
-        this.velocity('transition.slideUpIn', { duration: 500, delay: 100 });
+    $.fn.animIndexIntro = function(callback) {
+        this.velocity('transition.slideUpIn', { duration: 500, delay: 100, complete: callback });
         return this;
     }
-})(jQuery);
+    $.fn.animShowDots = function() {
+        var dots = this.find(".dot");
+        for(var i = 0; i < dots.length; i++) {
+            $(dots[i]).velocity('transition.expandIn', { duration: 500 });
+        }
+        return this;
+    }
 
-/* General batch animation functions */
-var anim = {
-    diceIntro: function(dice) {
-        dice[0].element.animDiceIntro(0);
-        dice[1].element.animDiceIntro(150);
-        dice[2].element.animDiceIntro(300, function() {
-            $('#index-main').animIndexIntro();
-        });
-    },
-    randomizeDice: function(dice) {
-        for(var i = 0; i < dice.length; i++) {
-            dice[i].randomize.call(dice[i]);
+    /* Dice Animation */
+    $.fn.moveDot = function(top, left) {
+        this.velocity({ top: top, left: left }, { easing: 'ease-in-out', duration: 500, queue: false });
+    }
+    $.fn.animDiceDots = function(number) {
+        var dots = this.find(".dot");
+        switch(number) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            $(dots[0]).moveDot(5*number, 5*number);
         }
     }
-};
+})(jQuery);
