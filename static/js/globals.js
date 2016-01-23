@@ -42,7 +42,6 @@ $(document).ready(function() {
     if(!utils.getHash()) {
         var dice = [new Die('#index-dice-group-hero'), new Die('#index-dice-group-hero'), new Die('#index-dice-group-hero')];
         anim.diceIntro(dice);
-        anim.randomizeDice(dice);
     } else {
         alert("GAME exists!");
     }

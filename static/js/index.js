@@ -1,8 +1,8 @@
 $(document).ready(function() {
 	/* Show the join game page */
 	$('#index-join-game').click(function() {
-		$('#index-page').animHidePage(0, function() {
-			$('#join-page').animShowPage(0);
+		$('#index-page').animHidePage(function() {
+			$('#join-page').animShowPage();
 		});
 	});
 
