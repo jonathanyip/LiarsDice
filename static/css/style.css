@@ -46,16 +46,26 @@ body {
 
 /* Dice */
 .die {
+	position: relative;
 	display: inline-block;
 	height: 50px;
 	width: 50px;
 	border-radius: 6px;
-	margin-right: 15px;
+	margin-right: 20px;
 	background-color: #ffffff;
 	box-shadow: 2px 2px 1px #00c4e6;
 }
 .die:last-child {
 	margin-right: 0px;
+}
+.die > .dot {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	top: 20px;
+	left: 20px;
+	background-color: #00d0f4;
+	border-radius: 50%;
 }
 
 /* Input */
@@ -216,8 +226,19 @@ a:link, a:visited, a:hover, a:active {
 	text-decoration: underline;
 }
 
+/* Animation Styles */
 /* Hide these pages initially */
-#join-page, .error {
+#index-main, #join-page, #join-error {
 	display: none;
 	opacity: 0;
+}
+
+#index-dice-group-hero .die {
+	display: none;
+	opacity: 0;
+	height: 0px;
+	width: 0px;
+}
+#index-dice-group-hero .die > .dot {
+	display: none;
 }
