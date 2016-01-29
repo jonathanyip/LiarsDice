@@ -11,7 +11,7 @@
         return this;
     };
     /* Shows an error. If it already exists, reshow it. */
-    $.fn.animShowError = function(delay, callback) {
+    $.fn.animShowError = function(callback) {
         if(this.css('display') === 'none') {
             this.velocity('slideDown', { duration: 200, queue: false })
                 .velocity('transition.slideRightIn', { duration: 200 });
@@ -23,8 +23,8 @@
         return this;
     };
 
-    /* Animate the dice introduction. */
-    $.fn.animDiceIntro = function(delay, callback) {
+    /* Animate the dice. */
+    $.fn.animShowDie = function(delay, callback) {
         this.velocity({
             rotateZ: 360,
             height: 50,
@@ -39,10 +39,6 @@
         });
         return this;
     }
-    $.fn.animIndexIntro = function(callback) {
-        this.velocity('transition.slideUpIn', { duration: 500, delay: 100, complete: callback });
-        return this;
-    }
     $.fn.animShowDots = function() {
         var dots = this.find(".dot");
         for(var i = 0; i < dots.length; i++) {
@@ -50,8 +46,6 @@
         }
         return this;
     }
-
-    /* Dice Animation */
     $.fn.moveDot = function(top, left) {
         this.velocity({ top: top, left: left }, { easing: 'ease-in-out', duration: 500, queue: false });
     }
@@ -59,12 +53,59 @@
         var dots = this.find(".dot");
         switch(number) {
             case 1:
+                $(dots[0]).moveDot(20, 20);
+                $(dots[1]).moveDot(20, 20);
+                $(dots[2]).moveDot(20, 20);
+                $(dots[3]).moveDot(20, 20);
+                $(dots[4]).moveDot(20, 20);
+                $(dots[5]).moveDot(20, 20);
+                break;
             case 2:
+                $(dots[0]).moveDot(20, 12);
+                $(dots[1]).moveDot(20, 12);
+                $(dots[2]).moveDot(20, 12);
+                $(dots[3]).moveDot(20, 28);
+                $(dots[4]).moveDot(20, 28);
+                $(dots[5]).moveDot(20, 28);
+                break;
             case 3:
+                $(dots[0]).moveDot(20, 8);
+                $(dots[1]).moveDot(20, 8);
+                $(dots[2]).moveDot(20, 20);
+                $(dots[3]).moveDot(20, 20);
+                $(dots[4]).moveDot(20, 32);
+                $(dots[5]).moveDot(20, 32);
+                break;
             case 4:
+                $(dots[0]).moveDot(12, 12);
+                $(dots[1]).moveDot(28, 12);
+                $(dots[2]).moveDot(12, 12);
+                $(dots[3]).moveDot(28, 28);
+                $(dots[4]).moveDot(12, 28);
+                $(dots[5]).moveDot(28, 28);
+                break;
             case 5:
+                $(dots[0]).moveDot(12, 12);
+                $(dots[1]).moveDot(28, 12);
+                $(dots[2]).moveDot(20, 20);
+                $(dots[3]).moveDot(20, 20);
+                $(dots[4]).moveDot(12, 28);
+                $(dots[5]).moveDot(28, 28);
+                break;
             case 6:
-            $(dots[0]).moveDot(5*number, 5*number);
+                $(dots[0]).moveDot(12, 8);
+                $(dots[1]).moveDot(28, 8);
+                $(dots[2]).moveDot(12, 20);
+                $(dots[3]).moveDot(28, 20);
+                $(dots[4]).moveDot(12, 32);
+                $(dots[5]).moveDot(28, 32);
+                break;
         }
+    }
+
+    /* Animate the index page intro */
+    $.fn.animIndexIntro = function(callback) {
+        this.velocity('transition.slideUpIn', { duration: 500, delay: 100, complete: callback });
+        return this;
     }
 })(jQuery);

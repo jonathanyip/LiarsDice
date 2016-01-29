@@ -6,81 +6,53 @@
 /***********
  * Objects *
  ***********/
-/* Die object: Has prototypes for the animation */
-var Die = function(parent) {
+/* Dice object */
+var DiceGroup = function(parent) {
     this.parent = $(parent);
+    this.dice = [];
+    for(var i = 0; i < 3; i++) {
+        var die = $('<div class="die"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>');
+        this.dice.push(die);
+        this.parent.append(die);
+    }
 
-    /* The constructor adds the die element for you */
-    this.element = $('<div class="die"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>').hide();
-    this.parent.append(this.element);
     this.timerFunction;
 }
-/* Do dice intro */
-Die.prototype.introShow = function(options, callback) {
-    this.element.animDiceIntro(options, callback);
+
+DiceGroup.prototype.showDice = function(callback) {
+    var self = this;
+
+    self.dice[0].animShowDie(0);
+    self.dice[1].animShowDie(150);
+    self.dice[2].animShowDie(300, callback);
 }
-Die.prototype.showDots = function() {
-    this.element.animShowDots();
+
+DiceGroup.prototype.showDots = function(callback) {
+    var self = this;
+
+    self.dice[0].animShowDots();
+    self.dice[1].animShowDots();
+    self.dice[2].animShowDots();
+
+    typeof callback === 'function' && callback();
 }
-/* Randomize dice animation */
-Die.prototype.randomize = function() {
-    var self = this.element;
-    this.timerFunction = setInterval(function() {
-        var random = Math.floor(Math.random() * 6) + 1;
-        self.animDiceDots(random);
+
+DiceGroup.prototype.randomize = function() {
+    var self = this;
+    self.timerFunction = setInterval(function() {
+        for(var i = 0; i < self.dice.length; i++) {
+            var random = Math.floor(Math.random() * 6) + 1;
+            self.dice[i].animDiceDots(random);
+        }
     }, 1000);
 }
-/* Stops die randomization */
-Die.prototype.derandomize = function() {
+
+DiceGroup.prototype.derandomize = function() {
     clearInterval(this.timerFunction);
 }
 
-/********************
- * Helper Functions *
- ********************/
-/* Utils object: Contains helper functions */
-var utils = {
-    setHash: function(path) {
-        window.location.hash = path;
-    },
-    getHash: function() {
-        return window.location.hash;
-    }
-};
-
-/* Batch object: General batch animation functions */
-var batch = {
-    diceIntro: function(dice) {
-        dice[0].element.animDiceIntro(0);
-        dice[1].element.animDiceIntro(150);
-        dice[2].element.animDiceIntro(300, function() {
-            $('#index-main').animIndexIntro(function() {
-                for(var i = 0; i < dice.length; i++) {
-                    dice[i].showDots.call(dice[i]);
-                }
-            });
-        });
-    },
-    randomizeDice: function(dice) {
-        for(var i = 0; i < dice.length; i++) {
-            dice[i].randomize.call(dice[i]);
-        }
-    }
-};
-
-/*********************
- * Startup Functions *
- *********************/
+/******************
+ * Startup Things *
+ ******************/
 /* Initialize the socket variable in a global function */
 var socket = io();
-
-/* Startup animations? */
-$(document).ready(function() {
-    if(!utils.getHash()) {
-        var dice = [new Die('#index-dice-group-hero'), new Die('#index-dice-group-hero'), new Die('#index-dice-group-hero')];
-        batch.diceIntro(dice);
-        batch.randomizeDice(dice);
-    } else {
-        alert("GAME exists!");
-    }
-});

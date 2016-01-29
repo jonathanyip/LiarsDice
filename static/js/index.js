@@ -23,13 +23,24 @@ $(document).ready(function() {
 		switch(msg.info) {
 			case 'GameExists':
 			case 'CreatedGame': {
-				utils.setHash(msg['GameID']);
+				utils.setPage(msg['GameID']);
 				break;
 			}
 			case 'GameDoesNotExist': {
-				$('#join-error').animShowError(0);
+				$('#join-error').animShowError();
 				break;
 			}
 		}
 	});
+
+	/* Startup animations! */
+	var diceGroup = new DiceGroup('#index-dice-group-hero');
+
+	diceGroup.showDice.call(diceGroup, function() {
+		$('#index-main').animIndexIntro(function() {
+			diceGroup.showDots.call(diceGroup);
+		});
+	});
+
+    diceGroup.randomize.call(diceGroup);
 });
