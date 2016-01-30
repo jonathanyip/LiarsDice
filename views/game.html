@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>Liar's Dice</title>
+
+		<meta name="description" content="An online version of the multiplayer dice game Liar's Dice!">
+		<meta name="author" content="GhostCats">
+
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:400,700" rel="stylesheet">
+		<link href="/css/normalize.css" rel="stylesheet">
+		<link href="/css/style.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="colorBar"></div>
+
+		<div class="container" id="index-page">
+			<div id="index-dice-group-hero" class="dice-group-hero"></div>
+			<div id="index-main">
+				<div class="divider"></div>
+				<div class="header-hero">Liar's Dice</div>
+				<div class="button-group-hero">
+					<button class="button" id="index-play-game">Play the game!</button>
+					<button class="button" id="index-join-game">Join an existing game</button>
+				</div>
+			</div>
+		</div>
+		<div class="container" id="join-page">
+			<div class="input-group">
+				<div class="header">What's the game key?</div>
+				<input class="input" type="text" placeholder="Game Key" id="join-game-key">
+				<div class="error" id="join-error">
+					<p>Can't seem to find this game key!</p>
+					<p>Did you want to <a href="#" id="join-play-game">make a new game instead?</a></p>
+				</div>
+			</div>
+			<div class="button-group">
+				<button class="button" id="join-find-game">Join!</button>
+			</div>
+		</div>
+
+		<script src="/js/jquery.min.js"></script>
+		<script src="/js/velocity.min.js"></script>
+		<script src="/js/velocity.ui.min.js"></script>
+		<script src="/js/socket.io.js"></script>
+
+		<script>
+			var GameID = {{ GameID }};
+		</script>
+		<script src="/js/utils.js"></script>
+		<script src="/js/animation.js"></script>
+		<script src="/js/globals.js"></script>
+	</body>
+<html>

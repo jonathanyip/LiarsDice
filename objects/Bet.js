@@ -1,7 +1,7 @@
 /* Bet Constructor */
-var Bet = function(player, numDice, diceNum) {
+var Bet = function(player, numOfDice, diceNum) {
 	this.player = player;
-	this.numDice = numDice;
+	this.numOfDice = numOfDice;
 	this.diceNum = diceNum;
 }
 

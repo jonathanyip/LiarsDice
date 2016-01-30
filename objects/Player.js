@@ -24,4 +24,22 @@ Player.prototype.reset = function() {
 	this.stillAlive = true;
 }
 
+/* Removes a die */
+Player.prototype.removeDie = function() {
+	if(this.dice.length < 0) {
+		array.splice(this.dice.length - 1, 1);
+	}
+}
+
+/* */
+Player.prototype.countNumOfDie = function(diceNum) {
+	var numOfDice = 0;
+	for(var i = 0; i < this.dice.length; i++) {
+		if(this.dice[i].number === diceNum) {
+			numOfDice += 1;
+		}
+	}
+	return numOfDice;
+}
+
 module.exports = Player;

@@ -132,7 +132,7 @@ Game.prototype.doTurn = function(io) {
 	// Send a game update to players
 	var gameStats = { 'CurrentPlayer': this.players[this.turn].name, 'CurrentBet': this.currentBet };
 	this.sendToAllExcept(io, this.players[this.turn], {
-		info: 'GameUpdate',
+		info: 'TurnUpdate',
 		'Type': 'Turn',
 		'YourTurn': false,
 		'GameStats': gameStats
@@ -146,7 +146,45 @@ Game.prototype.doTurn = function(io) {
 }
 
 /* Does an action performed by a specific player */
-Game.prototype.doAction = function(io) {
+Game.prototype.doAction = function(io, player, actionMsg) {
+	switch(actionMsg['Action']) {
+		case 'Bet': {
+			var numOfDice = actionMsg['NumOfDice'];
+			var diceNum = actionMsg['DiceNum'];
+
+			this.currentBet = new Bet(player, numOfDice, diceNum);
+			this.doTurn();
+
+			break;
+		}
+		case 'SpotOn': {
+			var numOfDice = 0;
+			for(var i = 0; i < this.players.length; i++) {
+				numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.diceNum);
+			}
+
+			if(numOfDice == this.currentBet.numOfDice) {
+				for(var i = 0; i < this.players.length; i++) {
+					if(this.players[i].id != player.id) {
+						this.players[i].removeDie.call(this.players[i]);
+					}
+				}
+
+				this.sendToAll(io, { info: 'ResultsUpdate', 'SpotOn': true });
+			} else {
+				this.sendToAll(io, { info: 'ResultsUpdate', 'SpotOn': false });
+			}
+
+			break;
+		}
+		case 'BS': {
+			var numOfDice = 0;
+			for(var i = 0; i < this.players.length; i++) {
+				numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.diceNum);
+			}
+			break;
+		}
+	}
 	/*
 	 * TODO: Recieve an action from the player,
 	 * 1) If they bet:

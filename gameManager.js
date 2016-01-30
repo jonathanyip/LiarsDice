@@ -39,12 +39,16 @@ module.exports.getGame = function(socket, gameID, callback) {
 }
 
 /* Gets the game and player from the socket, if they exist */
-module.exports.getSocketGP = function(socket, callback) {
+module.exports.getSocketGP = function(socket, callback, showErrors) {
+	showErrors = (showErrors !== false);
+
 	if("game" in socket && "player" in socket) {
 		callback(socket.game, socket.player);
 	} else {
-		socket.emit('GameManager', { error: 'BadSocketEnvironment' });
-		console.log("[GameManager] Player has a bad socket environment!");
+		if(showErrors) {
+			socket.emit('GameManager', { error: 'BadSocketEnvironment' });
+			console.log("[GameManager] Player has a bad socket environment!");
+		}
 	}
 }
 

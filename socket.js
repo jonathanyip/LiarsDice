@@ -46,13 +46,10 @@ module.exports = function(server) {
 					});
 					break;
 				}
-				case 'doAction': {
+				case 'DoAction': {
 					gameManager.getSocketGP(socket, function(game, player) {
-						/*
-						 * TODO: Parse info here, or pass message into doAction()?
-						 */
-						game.doAction.call(game, io);
-					})
+						game.doAction.call(game, io, player, msg['ActionMsg']);
+					});
 					break;
 				}
 				case 'GoToLobby': {
@@ -69,7 +66,7 @@ module.exports = function(server) {
 			gameManager.getSocketGP(socket, function(game, player) {
 				game.leaveGame.call(game, player);
 				gameManager.checkEmptyGames(game.id);
-			});
+			}, false);
 		});
 	});
 };
