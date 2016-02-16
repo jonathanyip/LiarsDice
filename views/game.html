@@ -17,28 +17,29 @@
 	<body>
 		<div class="colorBar"></div>
 
-		<div class="container" id="index-page">
-			<div id="index-dice-group-hero" class="dice-group-hero"></div>
-			<div id="index-main">
-				<div class="divider"></div>
-				<div class="header-hero">Liar's Dice</div>
-				<div class="button-group-hero">
-					<button class="button" id="index-play-game">Play the game!</button>
-					<button class="button" id="index-join-game">Join an existing game</button>
-				</div>
-			</div>
-		</div>
-		<div class="container" id="join-page">
+		<div class="container" id="name-page">
 			<div class="input-group">
-				<div class="header">What's the game key?</div>
-				<input class="input" type="text" placeholder="Game Key" id="join-game-key">
-				<div class="error" id="join-error">
-					<p>Can't seem to find this game key!</p>
-					<p>Did you want to <a href="#" id="join-play-game">make a new game instead?</a></p>
+				<div class="header">What's your name?</div>
+				<input class="input" type="text" placeholder="Name" id="name-name">
+				<div class="error" id="name-error">
+					<p>Sorry, but that name's been taken!</p>
 				</div>
 			</div>
 			<div class="button-group">
-				<button class="button" id="join-find-game">Join!</button>
+				<button class="button" id="name-btn">Join!</button>
+			</div>
+		</div>
+
+		<div class="container" id="wait-page">
+			<div class="header">Your game key is <strong id="wait-id"></strong></div>
+			<div class="divider"></div>
+			<div class="users-group">
+				<div class="header">Current Players:</div>
+				<ul id="wait-players">
+				</ul>
+			</div>
+			<div class="button-group">
+				<button class="button" id="wait-btn">Start game!</button>
 			</div>
 		</div>
 
@@ -48,10 +49,12 @@
 		<script src="/js/socket.io.js"></script>
 
 		<script>
-			var GameID = {{ GameID }};
+			var GameID = "{{ GameID }}";
 		</script>
+
 		<script src="/js/utils.js"></script>
 		<script src="/js/animation.js"></script>
-		<script src="/js/globals.js"></script>
+		<script src="/js/objects.js"></script>
+		<script src="/js/game.js"></script>
 	</body>
 <html>

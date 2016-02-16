@@ -40,7 +40,7 @@
         return this;
     }
     $.fn.animShowDots = function() {
-        var dots = this.find(".dot");
+        var dots = this.find('.dot');
         for(var i = 0; i < dots.length; i++) {
             $(dots[i]).velocity('transition.expandIn', { duration: 500 });
         }
@@ -50,7 +50,7 @@
         this.velocity({ top: top, left: left }, { easing: 'ease-in-out', duration: 500, queue: false });
     }
     $.fn.animDiceDots = function(number) {
-        var dots = this.find(".dot");
+        var dots = this.find('.dot');
         switch(number) {
             case 1:
                 $(dots[0]).moveDot(20, 20);

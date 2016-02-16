@@ -1,18 +1,20 @@
 $(document).ready(function() {
+	var socket = io();
+
 	/* Show the join game page */
-	$('#index-join-game').click(function() {
+	$('#index-join-btn').click(function() {
 		$('#index-page').animHidePage(function() {
 			$('#join-page').animShowPage();
 		});
 	});
 
 	/* Checks whether this game actually exists */
-	$('#join-find-game').click(function() {
-		socket.emit('General', { info: 'DoesGameExist', 'GameID': $("#join-game-key").val() });
+	$('#join-btn').click(function() {
+		socket.emit('General', { info: 'DoesGameExist', 'GameID': $('#join-game-key').val() });
 	});
 
 	/* If they want to play a new game */
-	$('#index-play-game, #join-play-game').click(function(event) {
+	$('#index-play-btn, #join-new-game').click(function(event) {
 		event.preventDefault();
 		socket.emit('General', { info: 'CreateGame' });
 	});
@@ -26,9 +28,11 @@ $(document).ready(function() {
 				utils.setPage(msg['GameID']);
 				break;
 			}
+		}
+		switch(msg.error) {
 			case 'GameDoesNotExist': {
 				$('#join-error').animShowError();
-				break;
+				break;				
 			}
 		}
 	});

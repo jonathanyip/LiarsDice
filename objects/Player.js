@@ -3,7 +3,7 @@ var Die = require('./Die.js');
 
 /* Player Constructor */
 var Player = function(playerName, socketID) {
-	this.name = name;
+	this.name = playerName;
 	this.id = socketID;
 	this.dice = [new Die(), new Die(), new Die()];
 

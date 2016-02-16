@@ -64,7 +64,7 @@ module.exports = function(server) {
 		/* If the user disconnects */
 		socket.on('disconnect', function(msg) {
 			gameManager.getSocketGP(socket, function(game, player) {
-				game.leaveGame.call(game, player);
+				game.leaveGame.call(game, io, socket, player);
 				gameManager.checkEmptyGames(game.id);
 			}, false);
 		});

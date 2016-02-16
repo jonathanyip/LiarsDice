@@ -14,17 +14,17 @@ module.exports.createGame = function(socket) {
 	games[gameID] = game;
 
 	socket.emit('GameManager', { info: 'CreatedGame', 'GameID': gameID });
-	console.log("[GameManager] Created new game (" + gameID + ")");
+	console.log("[GameManager] Created new game {" + gameID + "}");
 }
 
 /* Checks whether this game exists, and sends info back to client */
 module.exports.doesGameExist = function(socket, gameID) {
 	if(gameID in games) {
 		socket.emit('GameManager', { info: 'GameExists', 'GameID': gameID });
-		console.log("[GameManager] Game (" + gameID + ") exists!");
+		console.log("[GameManager] Game {" + gameID + "} exists!");
 	} else {
-		socket.emit('GameManager', { info: 'GameDoesNotExist' });
-		console.log("[GameManager] Game (" + gameID + ") does not exist!");
+		socket.emit('GameManager', { error: 'GameDoesNotExist' });
+		console.log("[GameManager] Game {" + gameID + "} does not exist!");
 	}
 }
 
@@ -33,8 +33,8 @@ module.exports.getGame = function(socket, gameID, callback) {
 	if(gameID in games) {
 		callback(games[gameID]);
 	} else {
-		socket.emit('GameManager', { 'Error': 'GameDoesNotExist' });
-		console.log("[GameManager] Game (" + gameID + ") does not exist!");
+		socket.emit('GameManager', { error: 'GameDoesNotExist' });
+		console.log("[GameManager] Game {" + gameID + "} does not exist!");
 	}
 }
 
@@ -57,9 +57,10 @@ module.exports.getSocketGP = function(socket, callback, showErrors) {
  * because if it is, there is no longer anybody playing,
  * and we should get rid of it
  */
-module.exports.checkEmptyGame = function(gameID) {
+module.exports.checkEmptyGames = function(gameID) {
 	if(gameID in games) {
 		if(games[gameID].players.length === 0) {
+			console.log("[GameManager] Game {" + gameID + "} is empty, so we're deleting it.");
 			delete games[gameID];
 		}
 	}

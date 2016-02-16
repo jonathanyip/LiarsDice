@@ -28,7 +28,17 @@ Game.prototype.joinGame = function(io, socket, playerName) {
 	// If the game has already started, don't let more people join.
 	if(this.started) {
 		socket.emit('Game', { error: 'GameAlreadyStarted' });
+		console.log("[Game]: Player {" + playerName + "} is a bit late to the party for Game {" + this.id + "}");
 		return;
+	}
+
+	// If this game already has a player with this name, don't let them join.
+	for(var i = 0; i < this.players.length; i++) {
+		if(this.players[i].name === playerName) {
+			socket.emit('Game', { error: 'NameAlreadyExists' });
+			console.log("[Game] Player name {" + playerName + "} already exists for Game {" + this.id + "}!");
+			return;
+		}
 	}
 
 	// Create a new player
@@ -41,29 +51,33 @@ Game.prototype.joinGame = function(io, socket, playerName) {
 	socket.game = this;
 	socket.player = player;
 
+	// Join this game room
+	socket.join(this.id);
+
 	// Tell all other players that their player list needs to be updated
 	this.sendToAll(io, { info: 'UpdatePlayers', 'PlayerList': this.getPlayerNames() });
+	console.log("[Game]: Added new Player {" + playerName + "} to Game {" + this.id + "}");
 }
 
 /*
  * Removes the following player from the game
  * If they are the current player, move on to the next player.
  */
-Game.prototype.leaveGame = function(io, player) {
-	if(players[this.turn].id === player.id) {
+Game.prototype.leaveGame = function(io, socket, player) {
+	if(this.started && this.players[this.turn].id === player.id) {
 		this.doTurn();
 	}
 
 	// Remove this player from our list
 	for(var i = 0; i < this.players.length; i++) {
-		if(this.players[i].ID === player.ID) {
+		if(this.players[i].id === player.id) {
 			this.players.splice(i, 1);
 			break;
 		}
 	}
 
 	// Remove from socket.io room
-	io.sockets.connected[player.id].leave(this.id);
+	socket.leave(this.id);
 
 	// Tell other players that they need to update their list
 	this.sendToAll(io, { info: 'UpdatePlayers', 'PlayerList': this.getPlayerNames() });

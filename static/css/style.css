@@ -125,6 +125,7 @@ body {
 	background-color: #ffffff;
 	color: #333333;
 	box-shadow: 2px 2px 1px #00c4e6;
+	margin-right: 5px;
 }
 
 /* Select (Special Group) */
@@ -228,7 +229,7 @@ a:link, a:visited, a:hover, a:active {
 
 /* Animation Styles */
 /* Hide these pages initially */
-#index-main, #join-page, #join-error {
+.error, #index-main, #join-page, #name-page, #wait-page {
 	display: none;
 	opacity: 0;
 }
