@@ -1,28 +1,26 @@
 /* Global variables and requires */
 var express = require('express');
-var swig = require('swig');
+var nunjucks = require('nunjucks');
 var app = express();
-
-/* Configure Swig template engine */
-app.engine('html', swig.renderFile);
-app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
-app.set('view cache', false);
 
 /* Local static files */
 app.use(express.static('static'));
 
-/* Initialize all views */
-var views = require(__dirname + '/views.js')(app);
+/* Configure Nunjucks */
+nunjucks.configure('views', {
+	autoescape: true,
+	watch: true,
+	express: app
+});
 
 /* Start server with the process defined port (or 3000) */
 var port = process.env.PORT || 3000;
 var server = app.listen(port, function() {
-	var host = server.address().address;
-	var port = server.address().port;
-
-	console.log("[Socket] Server is currently working!");
+	console.log("[Web Server] Website is up and running!");
 });
+
+/* Initialize all views */
+var views = require(__dirname + '/views.js')(app);
 
 /* Initialize socket */
 var socket = require(__dirname + '/socket.js')(server);

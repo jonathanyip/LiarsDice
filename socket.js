@@ -3,56 +3,56 @@ module.exports = function(server) {
 	var gameManager = require('./gameManager.js');
 
 	io.on('connection', function(socket) {
-		console.log("[Socket] A new user has connected!");
+		console.log("[Socket] New user connected!");
 
 		/*
 		 * Handle Incoming Messages:
-		 * Use msg.info for the identifying heading
+		 * Use msg.tag for the identifying heading
 		 * Use msg.error for any errors
 		 */
 
-		/* From General (All purpose messages, but usually for pre-game things) */
-		socket.on('General', function(msg) {
-			switch(msg.info) {
-				case 'CreateGame': {
+		/* Messages to the Game Manager */
+		socket.on('GAME_MANAGER', function(msg) {
+			switch(msg.tag) {
+				case 'CREATE_GAME': {
 					gameManager.createGame(socket);
 					break;
 				}
-				case 'DoesGameExist': {
-					gameManager.doesGameExist(socket, msg['GameID']);
+				case 'DOES_GAME_EXIST': {
+					gameManager.doesGameExist(socket, msg['GAME_ID']);
 					break;
 				}
-				case 'JoinGame': {
-					gameManager.getGame(socket, msg['GameID'], function(game) {
-						game.joinGame.call(game, io, socket, msg['PlayerName']);
+				case 'JOIN_GAME': {
+					gameManager.getGame(socket, msg['GAME_ID'], function(game) {
+						game.joinGame.call(game, io, socket, msg['PLAYER_NAME']);
 					});
 					break;
 				}
 			}
 		});
 
-		/* From Game (Messages pertaining to the game itself) */
-		socket.on('Game', function(msg) {
-			switch(msg.info) {
-				case 'StartGame': {
+		/* Messages to the Game Object */
+		socket.on('GAME', function(msg) {
+			switch(msg.tag) {
+				case 'START_GAME': {
 					gameManager.getSocketGP(socket, function(game, player) {
 						game.startGame.call(game, io);
 					});
 					break;
 				}
-				case 'DoRound': {
+				case 'DO_ROUND': {
 					gameManager.getSocketGP(socket, function(game, player) {
 						game.doRound.call(game, io);
 					});
 					break;
 				}
-				case 'DoAction': {
+				case 'DO_ACTION': {
 					gameManager.getSocketGP(socket, function(game, player) {
 						game.doAction.call(game, io, player, msg['ActionMsg']);
 					});
 					break;
 				}
-				case 'GoToLobby': {
+				case 'GO_TO_LOBBY': {
 					gameManager.getSocketGP(socket, function(game, player) {
 						game.goToLobby.call(game, io);
 					});
@@ -61,12 +61,12 @@ module.exports = function(server) {
 			}
 		});
 
-		/* If the user disconnects */
+		/* If the user disconnects suddenly. */
 		socket.on('disconnect', function(msg) {
-			gameManager.getSocketGP(socket, function(game, player) {
-				game.leaveGame.call(game, io, socket, player);
-				gameManager.checkEmptyGames(game.id);
-			}, false);
+			if("game" in socket && "player" in socket) {
+				socket.game.leaveGame.call(socket.game, io, socket, socket.player);
+				gameManager.checkIfEmpty(socket.game);
+			}
 		});
 	});
 };

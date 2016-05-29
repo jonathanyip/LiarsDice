@@ -27,15 +27,15 @@ var Game = function(gameID) {
 Game.prototype.joinGame = function(io, socket, playerName) {
 	// If the game has already started, don't let more people join.
 	if(this.started) {
-		socket.emit('Game', { error: 'GameAlreadyStarted' });
-		console.log("[Game]: Player {" + playerName + "} is a bit late to the party for Game {" + this.id + "}");
+		socket.emit('GAME', { error: 'GAME_ALREADY_STARTED' });
+		console.log("[Game]: Player {" + playerName + "} is a bit late to the party for Game {" + this.id + "}...");
 		return;
 	}
 
 	// If this game already has a player with this name, don't let them join.
 	for(var i = 0; i < this.players.length; i++) {
 		if(this.players[i].name === playerName) {
-			socket.emit('Game', { error: 'NameAlreadyExists' });
+			socket.emit('GAME', { error: 'NAME_ALREADY_EXISTS' });
 			console.log("[Game] Player name {" + playerName + "} already exists for Game {" + this.id + "}!");
 			return;
 		}
@@ -45,7 +45,7 @@ Game.prototype.joinGame = function(io, socket, playerName) {
 	var player = new Player(playerName, socket.id);
 	this.players.push(player);
 
-	// Set user's socket variables, so they can use it later (gameManager.getSocketGP())
+	// Set user's socket variables, so they can use it later with (gameManager.getSocketGP())
 	// The Game class should not interact with an individual player's socket anymore,
 	// but rather through the Player class
 	socket.game = this;
@@ -54,9 +54,11 @@ Game.prototype.joinGame = function(io, socket, playerName) {
 	// Join this game room
 	socket.join(this.id);
 
-	// Tell all other players that their player list needs to be updated
-	this.sendToAll(io, { info: 'UpdatePlayers', 'PlayerList': this.getPlayerNames() });
-	console.log("[Game]: Added new Player {" + playerName + "} to Game {" + this.id + "}");
+	// Tell all players that their player list needs to be updated
+	this.sendToPlayer(io, player, { tag: 'JOINED_GAME' });
+	this.sendToAll(io, { tag: 'UPDATE_PLAYERS', 'PLAYER_LIST': this.getPlayerNames() });
+
+	console.log("[Game]: Player {" + playerName + "} joined Game {" + this.id + "}. Have fun!");
 }
 
 /*
@@ -64,13 +66,17 @@ Game.prototype.joinGame = function(io, socket, playerName) {
  * If they are the current player, move on to the next player.
  */
 Game.prototype.leaveGame = function(io, socket, player) {
+	// Rotate turns if the were they ones playing at the time,
+	// so nobody's left hanging.
 	if(this.started && this.players[this.turn].id === player.id) {
 		this.doTurn();
 	}
 
 	// Remove this player from our list
+	var deletedPlayer = null;
 	for(var i = 0; i < this.players.length; i++) {
 		if(this.players[i].id === player.id) {
+			deletedPlayer = this.players[i];
 			this.players.splice(i, 1);
 			break;
 		}
@@ -80,7 +86,8 @@ Game.prototype.leaveGame = function(io, socket, player) {
 	socket.leave(this.id);
 
 	// Tell other players that they need to update their list
-	this.sendToAll(io, { info: 'UpdatePlayers', 'PlayerList': this.getPlayerNames() });
+	this.sendToAll(io, { tag: 'UPDATE_PLAYERS', 'PLAYER_LIST': this.getPlayerNames() });
+	console.log("[Game]: Player {" + deletedPlayer.name + "} left Game {" + this.id + "}.");
 }
 
 /* Returns a list of player names */
@@ -128,7 +135,7 @@ Game.prototype.doRound = function(io) {
 	for(var i = 0; i < this.players.length; i++) {
 		var gameStats = { 'DieList': this.players[i].dice, 'DiceTotal': this.diceTotal };
 		this.sendToPlayer(io, this.players[i], {
-			info: 'GameUpdate',
+			tag: 'GameUpdate',
 			'Type': 'Round',
 			'GameStats': gameStats
 		});
@@ -146,13 +153,13 @@ Game.prototype.doTurn = function(io) {
 	// Send a game update to players
 	var gameStats = { 'CurrentPlayer': this.players[this.turn].name, 'CurrentBet': this.currentBet };
 	this.sendToAllExcept(io, this.players[this.turn], {
-		info: 'TurnUpdate',
+		tag: 'TURN_UPDATE',
 		'Type': 'Turn',
 		'YourTurn': false,
 		'GameStats': gameStats
 	});
 	this.sendToPlayer(io, this.players[this.turn], {
-		info: 'TurnUpdate',
+		tag: 'TURN_UPDATE',
 		'Type': 'Turn',
 		'YourTurn': true,
 		'GameStats': gameStats
@@ -161,8 +168,8 @@ Game.prototype.doTurn = function(io) {
 
 /* Does an action performed by a specific player */
 Game.prototype.doAction = function(io, player, actionMsg) {
-	switch(actionMsg['Action']) {
-		case 'Bet': {
+	switch(actionMsg['ACTION']) {
+		case 'BET': {
 			var numOfDice = actionMsg['NumOfDice'];
 			var diceNum = actionMsg['DiceNum'];
 
@@ -171,7 +178,7 @@ Game.prototype.doAction = function(io, player, actionMsg) {
 
 			break;
 		}
-		case 'SpotOn': {
+		case 'SPOT_ON': {
 			var numOfDice = 0;
 			for(var i = 0; i < this.players.length; i++) {
 				numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.diceNum);
@@ -184,9 +191,9 @@ Game.prototype.doAction = function(io, player, actionMsg) {
 					}
 				}
 
-				this.sendToAll(io, { info: 'ResultsUpdate', 'SpotOn': true });
+				this.sendToAll(io, { tag: 'RESULTS_UPDATE', 'SPON_ON': true });
 			} else {
-				this.sendToAll(io, { info: 'ResultsUpdate', 'SpotOn': false });
+				this.sendToAll(io, { tag: 'RESULTS_UPDATE', 'SPON_ON': false });
 			}
 
 			break;
@@ -226,7 +233,7 @@ Game.prototype.doAction = function(io, player, actionMsg) {
 /* Returns to the lobby, so new players can join */
 Game.prototype.goToLobby = function(io) {
 	this.started = false;
-	this.sendToAll(io, { info: 'GoToLobby' });
+	this.sendToAll(io, { tag: 'GO_TO_LOBBY' });
 }
 
 /*********************
@@ -251,7 +258,7 @@ Game.prototype.updateDiceTotal = function() {
 
 /* Tells the players to display a loading notification. */
 Game.prototype.loading = function(io) {
-	this.sendToAll(io, { info: 'Loading' });
+	this.sendToAll(io, { tag: 'LOADING' });
 }
 
 /************************
@@ -282,17 +289,17 @@ Game.prototype.getPrevPlayer = function() {
  ***************************/
 /* Sends a message to all players */
 Game.prototype.sendToAll = function(io, msg) {
-	io.sockets.in(this.id).emit('Game', msg);
+	io.sockets.in(this.id).emit('GAME', msg);
 }
 
-/* Sends a message to all players except the specified */
+/* Sends a message to all players except the specified player */
 Game.prototype.sendToAllExcept = function(io, player, msg) {
-	io.sockets.connected[player.id].broadcast.to(this.id).emit('Game', msg);
+	io.sockets.connected[player.id].broadcast.to(this.id).emit('GAME', msg);
 }
 
 /* Sends a message to this specific player */
 Game.prototype.sendToPlayer = function(io, player, msg) {
-	io.sockets.connected[player.id].emit('Game', msg);
+	io.sockets.connected[player.id].emit('GAME', msg);
 }
 
 module.exports = Game;

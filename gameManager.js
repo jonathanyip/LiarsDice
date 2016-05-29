@@ -13,56 +13,52 @@ module.exports.createGame = function(socket) {
 	var game = new Game(gameID);
 	games[gameID] = game;
 
-	socket.emit('GameManager', { info: 'CreatedGame', 'GameID': gameID });
-	console.log("[GameManager] Created new game {" + gameID + "}");
+	socket.emit('GAME_MANAGER', { tag: 'CREATED_GAME', 'GAME_ID': gameID });
+	console.log("[GameManager] Created new game {" + gameID + "}.");
 }
 
-/* Checks whether this game exists, and sends info back to client */
+/* Checks whether this game exists, and sends details back to client */
 module.exports.doesGameExist = function(socket, gameID) {
 	if(gameID in games) {
-		socket.emit('GameManager', { info: 'GameExists', 'GameID': gameID });
-		console.log("[GameManager] Game {" + gameID + "} exists!");
+		socket.emit('GAME_MANAGER', { tag: 'GAME_EXISTS', 'GAME_ID': gameID });
+		console.log("[GameManager] By request, game {" + gameID + "} exists!");
 	} else {
-		socket.emit('GameManager', { error: 'GameDoesNotExist' });
-		console.log("[GameManager] Game {" + gameID + "} does not exist!");
+		socket.emit('GAME_MANAGER', { error: 'GAME_DOES_NOT_EXIST' });
+		console.log("[GameManager] By request, game {" + gameID + "} does not exist!");
 	}
 }
 
-/* If the game exists, run callback passed the game */
+/* If the game exists, pass game to callback */
 module.exports.getGame = function(socket, gameID, callback) {
 	if(gameID in games) {
 		callback(games[gameID]);
 	} else {
-		socket.emit('GameManager', { error: 'GameDoesNotExist' });
+		socket.emit('GAME_MANAGER', { error: 'GAME_DOES_NOT_EXIST' });
 		console.log("[GameManager] Game {" + gameID + "} does not exist!");
 	}
 }
 
 /* Gets the game and player from the socket, if they exist */
-module.exports.getSocketGP = function(socket, callback, showErrors) {
+module.exports.getSocketGP = function(socket, callback) {
 	showErrors = (showErrors !== false);
 
 	if("game" in socket && "player" in socket) {
 		callback(socket.game, socket.player);
 	} else {
-		if(showErrors) {
-			socket.emit('GameManager', { error: 'BadSocketEnvironment' });
-			console.log("[GameManager] Player has a bad socket environment!");
-		}
+		socket.emit('GAME_MANAGER', { error: 'BAD_SOCKET_ENVIRONMENT' });
+		console.log("[GameManager] A player has a bad socket environment!");
 	}
 }
 
 /*
- * Checks if the following gameID is empty,
+ * Checks if the following game is empty,
  * because if it is, there is no longer anybody playing,
- * and we should get rid of it
+ * and we should get rid of it...
  */
-module.exports.checkEmptyGames = function(gameID) {
-	if(gameID in games) {
-		if(games[gameID].players.length === 0) {
-			console.log("[GameManager] Game {" + gameID + "} is empty, so we're deleting it.");
-			delete games[gameID];
-		}
+module.exports.checkIfEmpty = function(game) {
+	if(game.players.length === 0) {
+		console.log("[GameManager] Game {" + game.id + "} is empty, so we're deleting it. Okay?");
+		delete games[game.id];
 	}
 }
 

@@ -10,29 +10,28 @@ $(document).ready(function() {
 
 	/* Checks whether this game actually exists */
 	$('#join-btn').click(function() {
-		socket.emit('General', { info: 'DoesGameExist', 'GameID': $('#join-game-key').val() });
+		socket.emit('GAME_MANAGER', { tag: 'DOES_GAME_EXIST', 'GAME_ID': $('#join-game-key').val() });
 	});
 
 	/* If they want to play a new game */
 	$('#index-play-btn, #join-new-game').click(function(event) {
 		event.preventDefault();
-		socket.emit('General', { info: 'CreateGame' });
+		socket.emit('GAME_MANAGER', { tag: 'CREATE_GAME' });
 	});
 
-	/* Handle messages from the server */
-	/* From the GameManager */
-	socket.on('GameManager', function(msg) {
-		switch(msg.info) {
-			case 'GameExists':
-			case 'CreatedGame': {
-				utils.setPage(msg['GameID']);
+	/* Handle messages from the GameManager */
+	socket.on('GAME_MANAGER', function(msg) {
+		switch(msg.tag) {
+			case 'GAME_EXISTS':
+			case 'CREATED_GAME': {
+				utils.setPage(msg['GAME_ID']);
 				break;
 			}
 		}
 		switch(msg.error) {
-			case 'GameDoesNotExist': {
+			case 'GAME_DOES_NOT_EXIST': {
 				$('#join-error').animShowError();
-				break;				
+				break;
 			}
 		}
 	});

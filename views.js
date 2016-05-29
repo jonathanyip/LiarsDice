@@ -1,11 +1,10 @@
-/* Do the views */
 module.exports = function(app) {
-	/* Index view */
+	/* Index View */
 	app.get('/', function(req, res) {
-		res.render('index');
+		res.render('index.html');
 	});
-	/* Game view */
+	/* Game View */
 	app.get('/:id', function(req, res, next) {
-		res.render('game', { 'GameID': req.params.id });
+		res.render('game.html', { 'GameID': req.params.id });
 	});
 };
