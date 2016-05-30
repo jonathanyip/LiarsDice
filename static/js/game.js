@@ -53,12 +53,14 @@ $(document).ready(function() {
 			}
 			case 'STARTED_GAME': {
 				gameState = states.STARTED;
-				$('#lobby-page').animHidePage(function() {
-					$('#game-page').animShowPage();
-				});
+				$('#lobby-page').animHidePage();
 				break;
 			}
 			case 'PREROUND_UPDATE': {
+				if(!$('#game-page').is(':visible')) {
+					$('#game-page').animShowPage();
+				}
+				
 				diceGroup.setDiceCount.call(diceGroup, msg['DICE_COUNT']);
 
 				$('#game-stats').animHidePage();
