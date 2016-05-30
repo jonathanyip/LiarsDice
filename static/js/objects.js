@@ -1,10 +1,9 @@
 /* Objects */
 
 /* DiceGroup object */
-var DiceGroup = function(parent, visible) {
+var DiceGroup = function(parent) {
 	this.parent = $(parent);
 	this.dice = [];
-	this.visible = false;
 
 	this.setDiceCount(3);
 
@@ -15,13 +14,9 @@ var DiceGroup = function(parent, visible) {
 DiceGroup.prototype.showDice = function(callback) {
 	var self = this;
 
-	if(!self.visible) {
-		self.dice[0].animShowDie(0);
-		self.dice[1].animShowDie(150);
-		self.dice[2].animShowDie(300, callback);
-	}
-
-	self.visible = true;
+	self.dice[0].animShowDie(0);
+	self.dice[1].animShowDie(150);
+	self.dice[2].animShowDie(300, callback);
 }
 
 /* Animates the dots appearing. */
@@ -70,7 +65,7 @@ DiceGroup.prototype.setDiceCount = function(diceCount) {
 
 	// Handle empty cases
 	if(diceCount === 0) {
-		self.parent.html("<p>You have no more dice. Sucks. :(</p>");
+		self.parent.html("<p><strong>You have no more dice. :(</strong></p>");
 		self.dice = [];
 		return;
 	}

@@ -233,7 +233,8 @@ a:link, a:visited, a:hover, a:active {
 .error,
 #index-main, #join-page,
 #name-page, #lobby-page,
-#game-page, #game-stats, #game-details, #game-your-turn, #game-other-turn, #game-final-details, #game-select, #game-last-bet {
+#game-page, #game-stats, #game-details, #game-your-turn, #game-other-turn, #game-final-details, #game-select, #game-last-bet,
+#game-over-page {
 	display: none;
 	opacity: 0;
 }

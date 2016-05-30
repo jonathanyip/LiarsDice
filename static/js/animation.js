@@ -26,6 +26,8 @@
 
 	/* Animate the dice. */
 	$.fn.animShowDie = function(delay, callback) {
+		if(this.is(':visible')) return;
+
 		this.velocity({
 			rotateZ: 360,
 			height: 50,

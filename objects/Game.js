@@ -121,6 +121,17 @@ Game.prototype.startGame = function(io) {
 
 /* Do a round (new dice, reset bet, then do a turn)! */
 Game.prototype.doRound = function(io) {
+	// Update player status
+	this.updatePlayerStatus();
+
+	// Find a winner, if possible.
+	var winner = this.winningPlayer();
+	if(winner !== null) {
+		this.sendToAll(io, { tag: 'GAME_OVER', 'WINNER': winner.name });
+		console.log("[Game]: Game {" + this.id + "} has a winner! Player {" + winner.name + "}!");
+		return;
+	}
+
 	// Reset current bet to null
 	this.currentBet = null;
 
@@ -129,9 +140,6 @@ Game.prototype.doRound = function(io) {
 
 	// Update total number of dice
 	this.updateDiceTotal();
-
-	// Update player status
-	this.updatePlayerStatus();
 
 	// Sends every player a pre-round update (how many dice they have, basically)
 	for(var i = 0; i < this.players.length; i++) {
@@ -212,6 +220,7 @@ Game.prototype.doAction = function(io, player, msg) {
 					numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.type);
 				}
 
+				// They got the right number of dice
 				if(numOfDice == this.currentBet.number) {
 					// If the number of dice with this type equals the bet, everybody except them loses a die
 					for(var i = 0; i < this.players.length; i++) {
@@ -235,15 +244,31 @@ Game.prototype.doAction = function(io, player, msg) {
 			break;
 		}
 		case 'BS': {
-			var numOfDice = 0;
-			for(var i = 0; i < this.players.length; i++) {
-				numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet['TYPE']);
+			if(this.currentBet !== null) {
+				var numOfDice = 0;
+				for(var i = 0; i < this.players.length; i++) {
+					numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.type);
+				}
+
+				// The previous player bet the wrong number of dice
+				if(numOfDice < this.currentBet.number) {
+					var prevPlayer = this.players[this.getPrevPlayer()];
+					prevPlayer.removeDie.call(prevPlayer);
+					this.sendToAll(io, { tag: 'FINAL_UPDATE', 'ACTION': 'BS', 'BS': true, 'PLAYER': player.name, 'PREV_PLAYER': prevPlayer.name });
+					console.log("[Game]: Player {" + player.name + "} said BS! And they were right!");
+				} else {
+					player.removeDie.call(player);
+					this.sendToAll(io, { tag: 'FINAL_UPDATE', 'ACTION': 'BS', 'BS': false, 'PLAYER': player.name });
+					console.log("[Game]: Player {" + player.name + "} said BS! But they were wrong...");
+				}
+			} else {
+				this.sendToPlayer(io, player, { error: 'CANNOT_BET' });
+				console.log("[Game]: Player {" + player.name + "} tried to say BS, but there was no bet!");
 			}
 			break;
 		}
 	}
 	/*
-	 * TODO: Recieve an action from the player,
 	 * 1) If they bet:
 	 *    - Update the bet.
 	 *    - Directly go to doTurn()
@@ -261,7 +286,6 @@ Game.prototype.doAction = function(io, player, msg) {
 	 *    - If they were wrong:
 	 *         * Remove 1 die from the current player
 	 *    - Tell everybody what happened
-	 *
 	 * For Spot On and Bet, wait until one player confirms to start doRound()
 	 */
 }
@@ -322,6 +346,25 @@ Game.prototype.getPrevPlayer = function() {
 		}
 	}
 	return this.turn;
+}
+
+/* Gets the winning player, if applicable */
+Game.prototype.winningPlayer = function() {
+	var count = 0;
+	var index = 0;
+
+	for(var i = 0; i < this.players.length; i++) {
+		if(this.players[i].stillAlive) {
+			count += 1;
+			index = i;
+		}
+	}
+
+	if(count == 1) {
+		return this.players[index];
+	} else {
+		return null;
+	}
 }
 
 /***************************

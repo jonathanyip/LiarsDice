@@ -31,6 +31,7 @@ $(document).ready(function() {
 	socket.on('GAME', function(msg) {
 		switch(msg.tag) {
 			case 'GO_TO_LOBBY': {
+				$('#game-over-page').animHidePage();
 				$('#game-page').animHidePage();
 			}
 			case 'JOINED_GAME': {
@@ -81,6 +82,7 @@ $(document).ready(function() {
 			case 'TURN_UPDATE': {
 				$('#game-select').animHidePage();
 				$('#game-final-details').animHidePage();
+				$('#game-details').animHidePage();
 
 				$('#game-btn-error').hide();
 				$('#game-select-error').hide();
@@ -134,14 +136,26 @@ $(document).ready(function() {
 						if(msg['SPOT_ON']) {
 							$('#game-final-details .users-group').html("<p><span class=\"user\">" + msg['PLAYER'] + "</span> said Spot On! And they were right!</p><p>Everybody except <span class=\"user\">" + msg['PLAYER'] + "</span> will lose a die.</p>");
 						} else {
-							$('#game-final-details .users-group').html("<p><span class=\"user\">" + msg['PLAYER'] + "</span> said Spot On! But they were wrong...</p><p>So, <span class=\"user\">" + msg['PLAYER'] + "</span> loses a die.</p>");
+							$('#game-final-details .users-group').html("<p><span class=\"user\">" + msg['PLAYER'] + "</span> said Spot On! But they were wrong...</p><p><span class=\"user\">" + msg['PLAYER'] + "</span> will lose a die.</p>");
 						}
 						break;
 					}
 					case 'BS': {
+						if(msg['BS']) {
+							$('#game-final-details .users-group').html("<p><span class=\"user\">" + msg['PLAYER'] + "</span> said BS! And they were right!</p><p><span class=\"user\">" + msg['PREV_PLAYER'] + "</span> will lose a die.</p>");
+						} else {
+							$('#game-final-details .users-group').html("<p><span class=\"user\">" + msg['PLAYER'] + "</span> said BS! But they were wrong...</p><p>So, <span class=\"user\">" + msg['PLAYER'] + "</span> will lose a die.</p>");
+						}
 						break;
 					}
 				}
+				break;
+			}
+			case 'GAME_OVER': {
+				$('#game-page').animHidePage(function() {
+					$('#game-winner').text(msg['WINNER']);
+					$('#game-over-page').animShowPage();
+				});
 				break;
 			}
 		}
@@ -224,8 +238,13 @@ $(document).ready(function() {
 		socket.emit('GAME', { tag: 'DO_ACTION', 'ACTION': 'SPOT_ON' });
 	});
 
+	/* Go to the next round */
 	$('#game-btn-next-round').click(function() {
 		socket.emit('GAME', { tag: 'DO_ROUND' });
+	})
+
+	$('#game-btn-lobby').click(function() {
+		socket.emit('GAME', { tag: 'GO_TO_LOBBY' });
 	})
 
 	/* Select Box Animations */
