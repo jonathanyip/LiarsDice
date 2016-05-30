@@ -94,12 +94,12 @@ body {
 .input-group input[type="text"]::-moz-placeholder {
 	color: #aaaaaa;
 }
-.input-group .error {
+.error {
 	font-size: 12px;
 	font-style: italic;
 	margin: 10px 0 20px 0;
 }
-.input-group .error p {
+.error p {
 	margin: 2px 0 2px 0;
 }
 
@@ -120,6 +120,7 @@ body {
 .users-group ul li, .user {
 	display: inline-block;
 	font-size: 16px;
+	font-weight: 700;
 	border-radius: 4px;
 	padding: 2px 5px 2px 5px;
 	background-color: #ffffff;
@@ -186,7 +187,7 @@ body {
 	background-color: #00d0f4;
 	transition: background-color 0.1s linear;
 }
-.select-group .select li:hover {
+.select-group .select li:hover, .select-group .select li.active {
 	background-color: #4de5ff;
 }
 
@@ -229,17 +230,20 @@ a:link, a:visited, a:hover, a:active {
 
 /* Animation Styles */
 /* Hide these pages initially */
-.error, #index-main, #join-page, #name-page, #wait-page {
+.error,
+#index-main, #join-page,
+#name-page, #lobby-page,
+#game-page, #game-stats, #game-details, #game-your-turn, #game-other-turn, #game-final-details, #game-select, #game-last-bet {
 	display: none;
 	opacity: 0;
 }
 
-#index-dice-group-hero .die {
+#index-dice-group-hero .die, #game-dice-group .die {
 	display: none;
 	opacity: 0;
 	height: 0px;
 	width: 0px;
 }
-#index-dice-group-hero .die > .dot {
+#index-dice-group-hero .die > .dot, #game-dice-group .die > .dot {
 	display: none;
 }

@@ -20,26 +20,76 @@
 		<div class="container" id="name-page">
 			<div class="input-group">
 				<div class="header">What's your name?</div>
-				<input class="input" type="text" placeholder="Name" id="name-name">
-				<div class="error" id="name-error">
-					<p>Sorry, but that name's been taken!</p>
-				</div>
+				<input class="input" type="text" placeholder="Name" id="name-name" autofocus>
+				<div class="error" id="name-error"></div>
 			</div>
 			<div class="button-group">
 				<button class="button" id="name-btn">Join!</button>
 			</div>
 		</div>
 
-		<div class="container" id="wait-page">
-			<div class="header">Your game key is <strong id="wait-id"></strong></div>
+		<div class="container" id="lobby-page">
+			<div class="header">Your game key is <strong id="lobby-id"></strong></div>
 			<div class="divider"></div>
 			<div class="users-group">
 				<div class="header">Current Players:</div>
-				<ul id="wait-players">
-				</ul>
+				<ul id="lobby-players"></ul>
 			</div>
 			<div class="button-group">
-				<button class="button" id="wait-btn">Start game!</button>
+				<button class="button" id="lobby-start-btn">Start game!</button>
+			</div>
+		</div>
+
+		<div class="container" id="game-page">
+			<div class="header">Your dice:</div>
+			<div class="dice-group" id="game-dice-group"></div>
+			<div id="game-stats">
+				<div class="divider"></div>
+				<div id="game-details">
+					<div class="users-group">
+						<div id="game-last-bet"><p><span class="user" id="game-last-player"></span> bets <strong><span id="game-last-number"></span></strong> <span id="game-last-type"></span>'s</p></div>
+						<p class="prompt">There are <strong><span id="game-remaining-dice"></span></strong> dice left in play.</p>
+					</div>
+					<div class="divider"></div>
+					<div class="button-group" id="game-your-turn">
+						<button class="button" id="game-btn-select-bet">Bet a higher amount</button>
+						<button class="button" id="game-btn-bs">BS!</button>
+						<button class="button" id="game-btn-spot-on">Spot on!</button>
+						<div class="error" id="game-btn-error"></div>
+					</div>
+					<div class="group" id="game-other-turn">
+						<p>It is currently <strong><span id="game-current-player"></span>'s</strong> turn.</p>
+					</div>
+				</div>
+				<div id="game-final-details">
+					<div class="users-group"></div>
+					<div class="button-group">
+						<button class="button" id="game-btn-next-round">Do Another Round</button>
+					</div>
+				</div>
+				<div id="game-select">
+					<div class="select-group">
+						<div class="left">
+							<input class="input" type="text" placeholder="#" id="game-select-number">
+						</div>
+						<div class="column-divider"></div>
+						<div class="right">
+							<ul class="select" id="game-select-type">
+								<li data-type="1">one's</li>
+								<li data-type="2">two's</li>
+								<li data-type="3">three's</li>
+								<li data-type="4">four's</li>
+								<li data-type="5">five's</li>
+								<li data-type="6">six's</li>
+							</ul>
+						</div>
+					</div>
+					<div class="error" id="game-select-error"></div>
+					<div class="button-group">
+						<button class="button" id="game-btn-bet">Bet</button>
+						<button class="button" id="game-btn-back">Go back</button>
+					</div>
+				</div>
 			</div>
 		</div>
 

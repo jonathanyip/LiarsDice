@@ -48,7 +48,7 @@ module.exports = function(server) {
 				}
 				case 'DO_ACTION': {
 					gameManager.getSocketGP(socket, function(game, player) {
-						game.doAction.call(game, io, player, msg['ActionMsg']);
+						game.doAction.call(game, io, player, msg);
 					});
 					break;
 				}

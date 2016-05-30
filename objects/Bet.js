@@ -1,8 +1,8 @@
 /* Bet Constructor */
-var Bet = function(player, numOfDice, diceNum) {
+var Bet = function(player, number, type) {
 	this.player = player;
-	this.numOfDice = numOfDice;
-	this.diceNum = diceNum;
+	this.number = number;
+	this.type = type;
 }
 
 module.exports = Bet;

@@ -26,8 +26,8 @@ Player.prototype.reset = function() {
 
 /* Removes a die */
 Player.prototype.removeDie = function() {
-	if(this.dice.length < 0) {
-		array.splice(this.dice.length - 1, 1);
+	if(this.dice.length > 0) {
+		this.dice.pop();
 	}
 }
 

@@ -58,19 +58,16 @@ Game.prototype.joinGame = function(io, socket, playerName) {
 	this.sendToPlayer(io, player, { tag: 'JOINED_GAME' });
 	this.sendToAll(io, { tag: 'UPDATE_PLAYERS', 'PLAYER_LIST': this.getPlayerNames() });
 
-	console.log("[Game]: Player {" + playerName + "} joined Game {" + this.id + "}. Have fun!");
+	console.log("[Game]: Player {" + playerName + "} joined Game {" + this.id + "}.");
 }
 
 /*
  * Removes the following player from the game
- * If they are the current player, move on to the next player.
+ * and brings everybody back to the lobby.
  */
 Game.prototype.leaveGame = function(io, socket, player) {
-	// Rotate turns if the were they ones playing at the time,
-	// so nobody's left hanging.
-	if(this.started && this.players[this.turn].id === player.id) {
-		this.doTurn();
-	}
+	// Go to the lobby, if somebody left
+	this.goToLobby(io);
 
 	// Remove this player from our list
 	var deletedPlayer = null;
@@ -85,8 +82,9 @@ Game.prototype.leaveGame = function(io, socket, player) {
 	// Remove from socket.io room
 	socket.leave(this.id);
 
-	// Tell other players that they need to update their list
+	// Tell everybody to update
 	this.sendToAll(io, { tag: 'UPDATE_PLAYERS', 'PLAYER_LIST': this.getPlayerNames() });
+
 	console.log("[Game]: Player {" + deletedPlayer.name + "} left Game {" + this.id + "}.");
 }
 
@@ -113,15 +111,16 @@ Game.prototype.startGame = function(io) {
 		this.players[i].reset.call(this.players[i]);
 	}
 
-	// Start off with a round
+	this.sendToAll(io, { tag: 'STARTED_GAME' });
+
+	console.log("[Game]: Started game {" + this.id + "}! Have fun!");
+
+	// Start off with a round.
 	this.doRound(io);
 }
 
 /* Do a round (new dice, reset bet, then do a turn)! */
 Game.prototype.doRound = function(io) {
-	// Tell them to display a loading screen
-	this.loading(io);
-
 	// Reset current bet to null
 	this.currentBet = null;
 
@@ -131,18 +130,32 @@ Game.prototype.doRound = function(io) {
 	// Update total number of dice
 	this.updateDiceTotal();
 
-	// Sends every player a game update
+	// Update player status
+	this.updatePlayerStatus();
+
+	// Sends every player a pre-round update (how many dice they have, basically)
 	for(var i = 0; i < this.players.length; i++) {
-		var gameStats = { 'DieList': this.players[i].dice, 'DiceTotal': this.diceTotal };
 		this.sendToPlayer(io, this.players[i], {
-			tag: 'GameUpdate',
-			'Type': 'Round',
-			'GameStats': gameStats
+			tag: 'PREROUND_UPDATE',
+			'DICE_COUNT': this.players[i].dice.length,
 		});
 	}
 
-	// Do a turn
-	this.doTurn();
+	console.log("[Game]: Game {" + this.id + "} is playing a round. All players randomize!");
+
+	setTimeout((function() {
+		// Sends player all their dice info.
+		for(var i = 0; i < this.players.length; i++) {
+			this.sendToPlayer(io, this.players[i], {
+				tag: 'ROUND_UPDATE',
+				'DIE_LIST': this.players[i].dice,
+				'DICE_TOTAL': this.diceTotal
+			});
+		}
+
+		// Do a turn
+		this.doTurn(io);
+	}).bind(this), 5000);
 }
 
 /* Do a turn (no new dice, just switch players)! */
@@ -151,57 +164,80 @@ Game.prototype.doTurn = function(io) {
 	this.turn = this.getNextPlayer();
 
 	// Send a game update to players
-	var gameStats = { 'CurrentPlayer': this.players[this.turn].name, 'CurrentBet': this.currentBet };
 	this.sendToAllExcept(io, this.players[this.turn], {
 		tag: 'TURN_UPDATE',
-		'Type': 'Turn',
-		'YourTurn': false,
-		'GameStats': gameStats
+		'YOUR_TURN': false,
+		'CURRENT_PLAYER': this.players[this.turn].name,
+		'CURRENT_BET': this.currentBet
 	});
 	this.sendToPlayer(io, this.players[this.turn], {
 		tag: 'TURN_UPDATE',
-		'Type': 'Turn',
-		'YourTurn': true,
-		'GameStats': gameStats
+		'YOUR_TURN': true,
+		'CURRENT_PLAYER': this.players[this.turn].name,
+		'CURRENT_BET': this.currentBet
 	});
+
+	console.log("[Game]: Game {" + this.id + "} is playing a turn. It is {" + this.players[this.turn].name + "}'s turn.");
 }
 
 /* Does an action performed by a specific player */
-Game.prototype.doAction = function(io, player, actionMsg) {
-	switch(actionMsg['ACTION']) {
+Game.prototype.doAction = function(io, player, msg) {
+	// Is it even their turn?
+	if(player.id != this.players[this.turn].id) return;
+
+	switch(msg['ACTION']) {
 		case 'BET': {
-			var numOfDice = actionMsg['NumOfDice'];
-			var diceNum = actionMsg['DiceNum'];
+			var numOfDice = msg['NUMBER'];
+			var type = msg['TYPE'];
 
-			this.currentBet = new Bet(player, numOfDice, diceNum);
-			this.doTurn();
+			if(this.currentBet !== null) {
+				if(numOfDice < this.currentBet.number || (numOfDice == this.currentBet.number && type <= this.currentBet.type)) {
+					this.sendToPlayer(io, player, { error: 'INVALID_BET' });
 
+					console.log("[Game]: Player {" + player.name + "} tried to put an invalid bet!");
+					return;
+				}
+			}
+
+			this.currentBet = new Bet(player, numOfDice, type);
+			this.doTurn(io);
+
+			console.log("[Game]: Player {" + player.name + "} placed a bet!");
 			break;
 		}
 		case 'SPOT_ON': {
-			var numOfDice = 0;
-			for(var i = 0; i < this.players.length; i++) {
-				numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.diceNum);
-			}
-
-			if(numOfDice == this.currentBet.numOfDice) {
+			if(this.currentBet !== null) {
+				var numOfDice = 0;
 				for(var i = 0; i < this.players.length; i++) {
-					if(this.players[i].id != player.id) {
-						this.players[i].removeDie.call(this.players[i]);
-					}
+					numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.type);
 				}
 
-				this.sendToAll(io, { tag: 'RESULTS_UPDATE', 'SPON_ON': true });
-			} else {
-				this.sendToAll(io, { tag: 'RESULTS_UPDATE', 'SPON_ON': false });
-			}
+				if(numOfDice == this.currentBet.number) {
+					// If the number of dice with this type equals the bet, everybody except them loses a die
+					for(var i = 0; i < this.players.length; i++) {
+						if(this.players[i].id != player.id) {
+							this.players[i].removeDie.call(this.players[i]);
+						}
+					}
 
+					this.sendToAll(io, { tag: 'FINAL_UPDATE', 'ACTION': 'SPOT_ON', 'SPOT_ON': true, 'PLAYER': player.name });
+					console.log("[Game]: Player {" + player.name + "} said spot on! And they were right!");
+				} else {
+					// Remove a die from this player, cause they were wrong.
+					player.removeDie.call(player);
+					this.sendToAll(io, { tag: 'FINAL_UPDATE', 'ACTION': 'SPOT_ON', 'SPOT_ON': false, 'PLAYER': player.name });
+					console.log("[Game]: Player {" + player.name + "} said spot on! But they were wrong...");
+				}
+			} else {
+				this.sendToPlayer(io, player, { error: 'CANNOT_BET' });
+				console.log("[Game]: Player {" + player.name + "} tried to say spot on, but there was no bet!");
+			}
 			break;
 		}
 		case 'BS': {
 			var numOfDice = 0;
 			for(var i = 0; i < this.players.length; i++) {
-				numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet.diceNum);
+				numOfDice += this.players[i].countNumOfDie.call(this.players[i], this.currentBet['TYPE']);
 			}
 			break;
 		}
@@ -256,9 +292,13 @@ Game.prototype.updateDiceTotal = function() {
 	this.diceTotal = diceTotal;
 }
 
-/* Tells the players to display a loading notification. */
-Game.prototype.loading = function(io) {
-	this.sendToAll(io, { tag: 'LOADING' });
+/* Updates player status (basically, are they still alive?) */
+Game.prototype.updatePlayerStatus = function() {
+	for(var i = 0; i < this.players.length; i++) {
+		if(this.players[i].dice.length == 0) {
+			this.players[i].stillAlive = false;
+		}
+	}
 }
 
 /************************
