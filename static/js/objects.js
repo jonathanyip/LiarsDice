@@ -14,9 +14,13 @@ var DiceGroup = function(parent) {
 DiceGroup.prototype.showDice = function(callback) {
 	var self = this;
 
-	self.dice[0].animShowDie(0);
-	self.dice[1].animShowDie(150);
-	self.dice[2].animShowDie(300, callback);
+	for(var i = 0; i < self.dice.length; i++) {
+		if(i == self.dice.length - 1) {
+			self.dice[i].animShowDie(150 * i, callback);
+		} else {
+			self.dice[i].animShowDie(150 * i);
+		}
+	}
 }
 
 /* Animates the dots appearing. */

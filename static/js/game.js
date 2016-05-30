@@ -60,7 +60,7 @@ $(document).ready(function() {
 				if(!$('#game-page').is(':visible')) {
 					$('#game-page').animShowPage();
 				}
-				
+
 				diceGroup.setDiceCount.call(diceGroup, msg['DICE_COUNT']);
 
 				$('#game-stats').animHidePage();
